@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Skeleton")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Frostbite Manifest System Tools")]
+[assembly: AssemblyDescription("https://github.com/majomix/frostbite-manifest-tools")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Skeleton")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("www.lokalizacie.sk")]
+[assembly: AssemblyProduct("Localization Tools")]
+[assembly: AssemblyCopyright("Mario Csaplar for www.lokalizacie.sk © 2018.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

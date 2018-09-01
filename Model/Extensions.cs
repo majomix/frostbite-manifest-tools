@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace FrostbiteManifestSystemTools.Model
 {
@@ -49,6 +51,19 @@ namespace FrostbiteManifestSystemTools.Model
                 throw new EndOfStreamException(string.Format("{0} bytes required from stream, but only {1} returned.", byteCount, result.Length));
 
             return result;
+        }
+
+        public static string ReadNullTerminatedString(this BinaryReader binaryReader)
+        {
+            List<byte> stringBytes = new List<byte>();
+            int currentByte;
+
+            while ((currentByte = binaryReader.ReadByte()) != 0x00)
+            {
+                stringBytes.Add((byte)currentByte);
+            }
+
+            return Encoding.ASCII.GetString(stringBytes.ToArray());
         }
 
         public static void WriteUInt16BE(this BinaryWriter binaryWriter, UInt16 value)

@@ -10,7 +10,7 @@ namespace FrostbiteManifestSystemTools.ViewModel
 {
     internal class OneTimeRunViewModel : BaseViewModel
     {
-        private string myTargetDirectory;
+        private string myUserDirectory;
         public bool? Export { get; set; }
         public ICommand ExtractByParameterCommand { get; private set; }
         public ICommand ImportByParameterCommand { get; private set; }
@@ -18,7 +18,7 @@ namespace FrostbiteManifestSystemTools.ViewModel
         public OneTimeRunViewModel()
         {
             ParseCommandLine();
-            Model = new FrostbiteManifestEditor();
+            Model = new FrostbiteManifestEditor(InputDirectoryPath);
 
             ImportByParameterCommand = new ImportByParameterCommand();
             ExtractByParameterCommand = new ExtractByParameterCommand();
@@ -29,22 +29,28 @@ namespace FrostbiteManifestSystemTools.ViewModel
             OptionSet options = new OptionSet()
                 .Add("export", value => Export = true)
                 .Add("import", value => Export = false)
-                .Add("index=", value => LoadedFilePath = CreateFullPath(value, false))
-                .Add("dir=", value => myTargetDirectory = CreateFullPath(value, true));
+                .Add("gamedir=", value => InputDirectoryPath = CreateFullPath(value, true))
+                .Add("userdir=", value => myUserDirectory = CreateFullPath(value, true));
 
             options.Parse(Environment.GetCommandLineArgs());
         }
 
         public void Extract()
         {
-            if (myTargetDirectory != null && LoadedFilePath != null)
+            if (myUserDirectory != null && InputDirectoryPath != null)
             {
                 LoadStructure();
+                ExtractTranslationFiles(myUserDirectory);
             }
         }
 
         public void Import()
         {
+            if (myUserDirectory != null && InputDirectoryPath != null)
+            {
+                LoadStructure();
+                ImportTranslationFiles(myUserDirectory);
+            }
         }
 
         private string CreateFullPath(string path, bool isDirectory)

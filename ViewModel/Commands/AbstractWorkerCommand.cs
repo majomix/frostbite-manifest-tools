@@ -25,7 +25,7 @@ namespace FrostbiteManifestSystemTools.ViewModel.Commands
                     if (parameters[1] is bool) viewModel = parameters[0] as BaseViewModel;
                 }
             }
-            return viewModel != null && viewModel.LoadedFilePath != null && Worker.IsBusy == false;
+            return viewModel != null && viewModel.InputDirectoryPath != null && Worker.IsBusy == false;
         }
 
         public event EventHandler CanExecuteChanged

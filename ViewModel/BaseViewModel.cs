@@ -8,20 +8,20 @@ namespace FrostbiteManifestSystemTools.ViewModel
     internal abstract class BaseViewModel : INotifyPropertyChanged
     {
         private int myCurrentProgress = 100;
-        private string myLoadedFilePath;
+        private string myInputDirectoryPath;
         private string myCurrentFile;
         private bool myHasError;
 
         public FrostbiteManifestEditor Model { get; protected set; }
-        public string LoadedFilePath
+        public string InputDirectoryPath
         {
-            get { return myLoadedFilePath; }
+            get { return myInputDirectoryPath ?? Directory.GetCurrentDirectory(); }
             set
             {
-                if (myLoadedFilePath != value)
+                if (myInputDirectoryPath != value)
                 {
-                    myLoadedFilePath = value;
-                    OnPropertyChanged("LoadedFilePath");
+                    myInputDirectoryPath = value;
+                    OnPropertyChanged("InputDirectoryPath");
                 }
             }
         }
@@ -81,63 +81,19 @@ namespace FrostbiteManifestSystemTools.ViewModel
 
         public void LoadStructure()
         {
-            using (ManifestBinaryReader reader = new ManifestBinaryReader(File.Open(LoadedFilePath, FileMode.Open)))
-            {
-                Model.LoadFileStructure(reader);
-                OnPropertyChanged("Model");
-            }
+            Model.LoadFileStructure();
         }
 
-        public void ExtractFile(string directory)
+        public void ExtractTranslationFiles(string targetDirectory)
         {
-            using (ManifestBinaryReader reader = new ManifestBinaryReader(File.Open(LoadedFilePath, FileMode.Open)))
-            {
-                //foreach (Entry entry in entryCollection)
-                //{
-                Model.ExtractFile(directory, reader);
-                //CurrentProgress = (int)(currentSize * 100.0 / totalSize);
-                //}
-            }
+            Model.ExtractTextFile(targetDirectory);
+            Model.ExtractFontFiles(targetDirectory);
         }
 
-        public void ResolveNewFiles(string directory)
+        public void ImportTranslationFiles(string inputDirectory)
         {
-            foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
-            {
-                string[] tokens = file.Split(new string[] { directory + @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string token in tokens)
-                {
-                    if (!String.IsNullOrWhiteSpace(token))
-                    {
-                    }
-                }
-            }
-        }
-
-        public void SaveStructure(string path)
-        {
-            using (ManifestBinaryReader reader = new ManifestBinaryReader(File.Open(LoadedFilePath, FileMode.Open)))
-            {
-                using (ManifestBinaryWriter writer = new ManifestBinaryWriter(File.Open(path, FileMode.Create)))
-                {
-                    //foreach (Entry entry in entries)
-                    //{
-                    Model.SaveDataEntry(reader, writer);
-                    //CurrentProgress = (int)(currentSize * 100.0 / totalSize);
-                    //CurrentFile = entry.Name;
-                    //}
-
-                    Model.SaveIndex(writer);
-                }
-            }
-
-            OnPropertyChanged("Model");
-        }
-
-        public string GenerateRandomName()
-        {
-            Random generator = new Random();
-            return Path.ChangeExtension(LoadedFilePath, @".tmp_" + generator.Next().ToString());
+            Model.ImportTextFile(inputDirectory);
+            Model.ImportFontFiles(inputDirectory);
         }
     }
 }
