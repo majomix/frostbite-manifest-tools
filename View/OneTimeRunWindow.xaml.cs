@@ -27,6 +27,10 @@ namespace FrostbiteManifestSystemTools.View
                 {
                     Close();
                 }
+                else if (oneTimeRunViewModel.HasError)
+                {
+                    ErrorText.Text = "Invalid game version.";
+                }
                 else if (oneTimeRunViewModel.Export == true)
                 {
                     oneTimeRunViewModel.ExtractByParameterCommand.Execute(oneTimeRunViewModel);

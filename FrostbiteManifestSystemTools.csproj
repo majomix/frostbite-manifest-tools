@@ -97,6 +97,7 @@
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="Model\FrostbiteHeader.cs" />
     <Compile Include="Model\ChunkDescriptor.cs" />
+    <Compile Include="Model\GameVersionDescriptor.cs" />
     <Compile Include="Model\ManifestBinaryReader.cs" />
     <Compile Include="Model\ManifestBinaryWriter.cs" />
     <Compile Include="Model\FrostbiteManifestEditor.cs" />

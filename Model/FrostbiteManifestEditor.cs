@@ -16,13 +16,12 @@ namespace FrostbiteManifestSystemTools.Model
         }
 
         private readonly string BaseDirectory = null;
-        private readonly string EnglishChunkGuid = "04eb61dcb468b4f99f4a3401794b2fa5"; // "A7E9B88A80D41B303CF95E477F544997"; // sha1 FEDC89E7F9094F043D40FF029E3A30BA03C75B2C
+        public readonly GameVersionDescriptor GameVersion;
+        //private readonly string EnglishChunkGuid = "7cf3fc1b51488d51ceb654c28d341b93"; // "e048628eebf640d311516a3e593765fd"; //"0c6843471bc93229ef6db8e7abc817e3"; //"21d60c52bbde905e80a5cd7f72063dcd"; // "7eb79a90efa71e82b712a6979b2b2161"; //"59b211a41c39d52e85db46359f41fe65"; //"107b902602806c2a3bde9aacc6cb7b43"; //"1603b60f865c47037ba5363c30503661"; // "c4814ee8268134a600281860114ff099"; // "c94071dc877edc4ad3d37ea667379369"; // "04eb61dcb468b4f99f4a3401794b2fa5"; // "A7E9B88A80D41B303CF95E477F544997"; // sha1 FEDC89E7F9094F043D40FF029E3A30BA03C75B2C
         private readonly string GermanChunkGuid = "A9DD793397106B9E641373609DD454FB";
         private readonly string[] FontFilesIds = new string[] { "CAA137EA1D2439DB", "62260D3D59055017", "DB62DBEF268BC7C5", "AB6E7745DAB7B953", "19C1F6E906291FCD", "E04D4AF32E12D179", "986728733207C4C9", "CB2813075165D1E5", "14D8FB3E96E5FB2D", "BEF7A206A6858EB5", "38D47D1C571C48FB" };
         private readonly string[] DataDirs = new string[] { @"\Data\Win32\installation\initialexperience", @"\Patch\Win32\installation\initialexperience" };
         private readonly string LayoutTocPath = @"\Data\layout.toc";
-        private readonly int LayoutTocManifestSha1Location = 13411;
-        private readonly int ManifestCatSha1Location = 1164692;
         private readonly int EnglishFontDescriptorId = 1235132813;
 
         private ChunksManifest manifest = null;
@@ -46,7 +45,68 @@ namespace FrostbiteManifestSystemTools.Model
 
         public FrostbiteManifestEditor(string baseDirectory)
         {
+            var supportedVersions = new List<GameVersionDescriptor>
+            {
+                new GameVersionDescriptor
+                {
+                    EnglishChunkGuid = "5ee920726bd6cf870a750f7aa98c162f",
+                    LayoutTocManifestSha1Location = 19847,
+                    ManifestCatSha1Location = 3536624,
+                    ManifestChunk = @"\cas_60.cas",
+                    FontDescriptor = @"\fonts_import_200313.descriptor"
+                },
+                new GameVersionDescriptor
+                {
+                    EnglishChunkGuid = "5ee920726bd6cf870a750f7aa98c162f",
+                    LayoutTocManifestSha1Location = 19847,
+                    ManifestCatSha1Location = 3536228,
+                    ManifestChunk = @"\cas_59.cas",
+                    FontDescriptor = @"\fonts_import_200313.descriptor"
+                },
+                //new GameVersionDescriptor
+                //{
+                //    EnglishChunkGuid = "db642d3dc89baff1b6c12bcfb1ffa7ed",
+                //    LayoutTocManifestSha1Location = 19847,
+                //    ManifestCatSha1Location = 3533528,
+                //    ManifestChunk = @"\cas_60.cas",
+                //    FontDescriptor = @"\fonts_import_200313.descriptor"
+                //},
+                new GameVersionDescriptor
+                {
+                    EnglishChunkGuid = "7cf3fc1b51488d51ceb654c28d341b93",
+                    LayoutTocManifestSha1Location = 18695,
+                    ManifestCatSha1Location = 3442772,
+                    ManifestChunk = @"\cas_57.cas",
+                    FontDescriptor = @"\fonts_import_200313.descriptor"
+                },
+                new GameVersionDescriptor
+                {
+                    EnglishChunkGuid = "7cf3fc1b51488d51ceb654c28d341b93",
+                    LayoutTocManifestSha1Location = 18695,
+                    ManifestCatSha1Location = 3436652,
+                    ManifestChunk = @"\cas_56.cas",
+                    FontDescriptor = @"\fonts_import.descriptor"
+                },
+                new GameVersionDescriptor
+                {
+                    EnglishChunkGuid = "154d1864fe3c1a47ba04d1d92678b53d",
+                    LayoutTocManifestSha1Location = 15811,
+                    ManifestCatSha1Location = 4021400,
+                    ManifestChunk = @"\cas_37.cas",
+                    FontDescriptor = @"\fonts_import.descriptor"
+                },
+            };
+
             BaseDirectory = baseDirectory;
+
+            foreach (var version in supportedVersions)
+            {
+                if (File.Exists(BaseDirectory + DataDirs[1] + version.ManifestChunk))
+                {
+                    GameVersion = version;
+                    break;
+                }
+            }
         }
 
         public void LoadFileStructure()
@@ -124,7 +184,7 @@ namespace FrostbiteManifestSystemTools.Model
 
         public void ExtractTextFile(string outputDirectory)
         {
-            WriteFileFromManifest(LocateLanguageFileChunk(), outputDirectory, EnglishChunkGuid);
+            WriteFileFromManifest(LocateLanguageFileChunk(), outputDirectory, GameVersion.EnglishChunkGuid);
         }
 
         public void WriteFileFromCatalogue(CatalogueEntry entry, string directory)
@@ -184,7 +244,7 @@ namespace FrostbiteManifestSystemTools.Model
             using (BinaryWriter writer = new BinaryWriter(File.Open(compoundName, FileMode.Append)))
             {
                 var offset = (int)writer.BaseStream.Position;
-                int fileSize = ChunkHandler.Chunk(writer, inputDirectory + @"\manifest\" + EnglishChunkGuid);
+                int fileSize = ChunkHandler.Chunk(writer, inputDirectory + @"\manifest\" + GameVersion.EnglishChunkGuid);
                 chunk.BasePosition = (uint)offset;
                 chunk.BaseLength = (uint)fileSize;
             }
@@ -201,7 +261,7 @@ namespace FrostbiteManifestSystemTools.Model
             var fileLengthsMapping = new Queue<int>();
             var relativeChunkIdToFileNames = new Dictionary<int, List<string>>();
 
-            using (StreamReader reader = new StreamReader(File.Open(inputDirectory + @"\fonts_import.descriptor", FileMode.Open)))
+            using (StreamReader reader = new StreamReader(File.Open(inputDirectory + GameVersion.FontDescriptor, FileMode.Open)))
             {
                 string line = null;
                 int lineNumber = 1;
@@ -287,13 +347,13 @@ namespace FrostbiteManifestSystemTools.Model
 
                 using (BinaryWriter layoutWriter = new BinaryWriter(File.Open(BaseDirectory + LayoutTocPath, FileMode.Open)))
                 {
-                    layoutWriter.BaseStream.Seek(LayoutTocManifestSha1Location, SeekOrigin.Begin);
+                    layoutWriter.BaseStream.Seek(GameVersion.LayoutTocManifestSha1Location, SeekOrigin.Begin);
                     layoutWriter.Write(updatedSha1);
                 }
 
                 using (BinaryWriter catWriter = new BinaryWriter(File.Open(catalogue.Path, FileMode.Open)))
                 {
-                    catWriter.BaseStream.Seek(ManifestCatSha1Location, SeekOrigin.Begin);
+                    catWriter.BaseStream.Seek(GameVersion.ManifestCatSha1Location, SeekOrigin.Begin);
                     catWriter.Write(updatedSha1);
                 }
             }
@@ -337,7 +397,7 @@ namespace FrostbiteManifestSystemTools.Model
 
         private Chunk LocateLanguageFileChunk()
         {
-            var englishDescriptor = manifest.Identifiers.Where(pair => BitConverter.ToString(pair.Id).Replace("-", "").ToLower() == EnglishChunkGuid).FirstOrDefault();
+            var englishDescriptor = manifest.Identifiers.Where(pair => BitConverter.ToString(pair.Id).Replace("-", "").ToLower() == GameVersion.EnglishChunkGuid).FirstOrDefault();
             return manifest.Chunks[(int)englishDescriptor.PatchStart];
         }
 
@@ -348,14 +408,15 @@ namespace FrostbiteManifestSystemTools.Model
 
         private string ResolveManifestCasFile()
         {
-            return BaseDirectory + DataDirs[1] + @"\cas_27.cas";
+            return BaseDirectory + DataDirs[1] + GameVersion.ManifestChunk;
         }
+
 
         private byte[] GetCurrentManifestSha1()
         {
             using (BinaryReader layoutReader = new BinaryReader(File.Open(BaseDirectory + LayoutTocPath, FileMode.Open)))
             {
-                layoutReader.BaseStream.Seek(LayoutTocManifestSha1Location, SeekOrigin.Begin);
+                layoutReader.BaseStream.Seek(GameVersion.LayoutTocManifestSha1Location, SeekOrigin.Begin);
                 return layoutReader.ReadBytes(20);
             }
         }

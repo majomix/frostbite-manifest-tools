@@ -19,6 +19,7 @@ namespace FrostbiteManifestSystemTools.ViewModel
         {
             ParseCommandLine();
             Model = new FrostbiteManifestEditor(InputDirectoryPath);
+            HasError = Model.GameVersion == null;
 
             ImportByParameterCommand = new ImportByParameterCommand();
             ExtractByParameterCommand = new ExtractByParameterCommand();
